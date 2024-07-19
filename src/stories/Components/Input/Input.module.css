@@ -1,0 +1,61 @@
+.floatLabel {
+  transition:
+    transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
+    opacity 03s ease-out;
+  transform-origin: 0 0;
+}
+
+.inputContainer:focus-within .floatLabel,
+.inputContainer .floatLabel:has(+ div > input:not(:placeholder-shown)) {
+  transform: scale(0.75) translateY(-0.5rem) translateX(0.5rem);
+  opacity: 0.75;
+}
+
+.inputContainer:focus-within .floatLabel.leadingIcon,
+.inputContainer
+  .floatLabel.leadingIcon:has(+ div > input:not(:placeholder-shown)) {
+  transform: scale(0.75) translateY(-0.5rem) translateX(calc(1rem));
+  opacity: 0.75;
+}
+
+.floatLabel + div > .input::placeholder {
+  color: transparent;
+}
+
+.floatLabel + div > .input:not(:placeholder-shown),
+.floatLabel + div > .input:focus {
+  padding-top: 1.25rem;
+  padding-bottom: 0.5rem;
+}
+
+.floatLabel.leadingIcon {
+  padding-left: 2.5rem;
+}
+
+.floatLabel.leadingIcon + div > .input:focus {
+  padding-left: 2.5rem;
+}
+
+.leadingIcon:has(~ .validate:invalid) {
+  border-top: 2px solid theme("colors.error.600");
+  border-bottom: 2px solid theme("colors.error.600");
+  border-left: 2px solid theme("colors.error.600");
+}
+
+.leadingIcon:has(~ .validate:valid) {
+  border-top: 2px solid theme("colors.success.500");
+  border-bottom: 2px solid theme("colors.success.500");
+  border-left: 2px solid theme("colors.success.500");
+}
+
+.input.validate:invalid + .trailingIcon {
+  border-top: 2px solid theme("colors.error.500");
+  border-bottom: 2px solid theme("colors.error.500");
+  border-right: 2px solid theme("colors.error.500");
+}
+
+.input.validate:valid + .trailingIcon {
+  border-top: 2px solid theme("colors.success.500");
+  border-bottom: 2px solid theme("colors.success.500");
+  border-right: 2px solid theme("colors.success.500");
+}

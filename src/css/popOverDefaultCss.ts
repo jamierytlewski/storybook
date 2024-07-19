@@ -1,0 +1,17 @@
+export const popOverContentStyle: string[] = [
+  "border",
+  "p-5",
+  "bg-white",
+  "rounded",
+  "z-50",
+  "shadow",
+  "border",
+  "border-gunmetal-200",
+  "shadow-gunmetal-200",
+  "will-change-[transform,opacity]",
+  "data-[state=open]:data-[side=top]:animate-slideDownAndFade",
+  "data-[state=open]:data-[side=right]:animate-slideLeftAndFade",
+  "data-[state=open]:data-[side=bottom]:animate-slideUpAndFade",
+  "data-[state=open]:data-[side=left]:animate-slideRightAndFade",
+  "outline-none",
+];

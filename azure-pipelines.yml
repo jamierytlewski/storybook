@@ -1,0 +1,98 @@
+# Node.js
+
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- main
+
+variables:
+  YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
+  
+pool:
+  vmImage: ubuntu-latest
+stages:
+- stage: BuildStorybook
+  jobs:
+  - job:
+    steps: 
+    - task: Cache@2
+      inputs:
+        key: '"yarn2" | "$(Agent.OS)" | yarn.lock'
+        restoreKeys: |
+          "yarn2" | "$(Agent.OS)"
+          "yarn2"
+        path: '$(YARN_CACHE_FOLDER)'
+      displayName: Cache Yarn packages
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '18.x'
+      displayName: 'Install Node.js'
+
+    - script: |
+        yarn install  --immutable
+        yarn build
+        yarn build-storybook
+      env:
+        FONT_AWESOME_TOKEN: $(FONT_AWESOME_TOKEN)
+      displayName: 'yarn install and build and test'
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/storybook-static'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        replaceExistingArchive: true
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        artifact: 'storybook'
+        publishLocation: 'pipeline'
+
+- stage: DeployStorybook
+  displayName: Deploy Storybook
+  dependsOn: BuildStorybook
+  jobs:
+  - deployment: VMDeploy
+    displayName: Deploy Development
+    environment:
+     name: Development
+     resourceType: VirtualMachine
+    strategy:
+     runOnce:
+       deploy:
+         steps:
+           - script: |
+               echo Genesis UI Storybook Deployment
+               unzip -o $(Pipeline.Workspace)/storybook/$(Build.BuildId).zip -d /var/dotnet_apps/dev.genesisui-storybook
+
+- stage: TestStorybook
+  displayName: Test Storybook
+  dependsOn: DeployStorybook
+  jobs:
+  - job:
+    steps:
+    - task: Cache@2
+      inputs:
+        key: '"yarn" | "$(Agent.OS)" | yarn.lock'
+        restoreKeys: |
+          "yarn" | "$(Agent.OS)"
+          "yarn"
+        path: '$(YARN_CACHE_FOLDER)'
+    - script: |
+        yarn install  --immutable
+        yarn test-storybook --junit --coverage --url https://dev-genesisui-storybook.rpmmoves.net/ --no-index-json
+        npx nyc report --reporter=cobertura -t coverage/storybook --report-dir coverage/storybook
+      env:
+        FONT_AWESOME_TOKEN: $(FONT_AWESOME_TOKEN)
+      displayName: 'yarn install and build and test'
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/junit.xml'
+    - task: PublishCodeCoverageResults@1
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/**/cobertura-coverage.xml'

@@ -1,0 +1,47 @@
+# Name of our action
+name: "Chromatic"
+# The event that will trigger the action
+on: push
+
+# What the action will do
+jobs:
+  test:
+    # The operating system it will run on
+    runs-on: self-hosted
+    # The list of steps that the action will go through
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
+        env:
+          FONT_AWESOME_TOKEN: ${{ secrets.FONTAWESOME_TOKEN }}
+      - run: |
+          yarn config set npmScopes.@fortawesome.npmRegistryServer "https://npm.pkg.github.com"
+          yarn config set npmScopes.@fortawesome.npmAlwaysAuth true
+          yarn config set npmScopes.@fortawesome.npmAuthToken $FONT_AWESOME_TOKEN
+        env:
+          FONT_AWESOME_TOKEN: ${{ secrets.FONTAWESOME_TOKEN }}
+      - name: Yarn Install and Build
+        run: |
+          yarn
+          yarn build
+        env:
+          FONT_AWESOME_TOKEN: ${{ secrets.FONTAWESOME_TOKEN }}
+        #👇 Adds Chromatic as a step in the workflow
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        env:
+          FONT_AWESOME_TOKEN: ${{ secrets.FONTAWESOME_TOKEN }}
+        # Options required for Chromatic's GitHub Action
+        with:
+          #👇 Chromatic projectToken, see https://storybook.js.org/tutorials/design-systems-for-developers/react/en/review/ to obtain it
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          exitOnceUploaded: true
+          autoAcceptChanges: "main"

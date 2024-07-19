@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: Figtree;
+  src: url("/fonts/Figtree[wght].woff2") format("woff2");
+}
+
+:root {
+  font-family: Figtree, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+
+  --bronze-hue: 48.66;
+  --dark-blue-hue: 260.59;
+  --gunmetal-hue: 235.27;
+  --detroit-blue-hue: 243.28;
+  color: theme("colors.gunmetal.500");
+}
+
+h1 {
+  font-size: 1.5rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 2rem;
+}
+
+b,
+strong {
+  font-weight: 700;
+}
+
+small {
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+}
+
+main a {
+  color: theme("colors.darkblue.500");
+  transition: color 0.15s ease-in-out;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid theme("colors.gunmetal.100");
+}

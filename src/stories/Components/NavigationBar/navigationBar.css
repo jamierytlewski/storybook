@@ -1,0 +1,35 @@
+nav {
+  background: linear-gradient(
+    120deg,
+    theme("colors.darkblue.900") 0%,
+    theme("colors.darkblue.800") 25%,
+    theme("colors.darkblue.700") 50%,
+    theme("colors.darkblue.600") 75%,
+    theme("colors.darkblue.500") 100%
+  );
+}
+
+nav a {
+  display: block;
+  color: theme("colors.white");
+}
+
+nav a.active:has(div.nav-parent),
+nav a:has(div.nav-parent):hover,
+nav.opened a:has(div.nav-parent.opened),
+nav.opened div.nav-children {
+  background-color: theme("colors.white / 10%");
+}
+
+nav div.nav-children {
+  transition: max-height 0.3s ease-in-out;
+}
+
+nav.closed div.nav-children,
+nav div.nav-children.closed {
+  max-height: 0;
+}
+
+nav:not(.closed) div.nav-children.opened {
+  max-height: 8rem;
+}
